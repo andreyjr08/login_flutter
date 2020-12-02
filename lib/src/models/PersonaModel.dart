@@ -17,7 +17,7 @@ class PersonaModel {
     this.direccion,
     this.telefono,
     this.fechaNacimiento,
-    this.estado = "A",
+    this.estado = "A"
   });
 
   int id;
@@ -25,7 +25,7 @@ class PersonaModel {
   String apellido;
   String direccion;
   String telefono;
-  DateTime fechaNacimiento;
+  String fechaNacimiento;
   String estado;
 
   factory PersonaModel.fromJson(Map<String, dynamic> json) => PersonaModel(
@@ -34,8 +34,8 @@ class PersonaModel {
         apellido: json["apellido"],
         direccion: json["direccion"],
         telefono: json["telefono"],
-        fechaNacimiento: DateTime.parse(json["fechaNacimiento"]),
-        estado: json["estado"],
+        fechaNacimiento: json["fecha_nacimiento"],
+        estado: json["estado"]
       );
 
   Map<String, dynamic> toJson() => {
@@ -44,8 +44,7 @@ class PersonaModel {
         "apellido": apellido,
         "direccion": direccion,
         "telefono": telefono,
-        "fechaNacimiento":
-            "${fechaNacimiento.year.toString().padLeft(4, '0')}-${fechaNacimiento.month.toString().padLeft(2, '0')}-${fechaNacimiento.day.toString().padLeft(2, '0')}",
-        "estado": estado,
+        "fecha_nacimiento":fechaNacimiento.toString(),
+         "estado": estado
       };
 }

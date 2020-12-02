@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:form_validate/src/models/PersonaModel.dart';
 import 'package:form_validate/src/providers/persona_provider.dart';
 import 'package:form_validate/src/utils/utils.dart' as utils;
+import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 
 class PersonaPage extends StatefulWidget {
   @override
@@ -11,6 +13,9 @@ class PersonaPage extends StatefulWidget {
 class _PersonaPageState extends State<PersonaPage> {
   final formKey = GlobalKey<FormState>();
   final personaProvider = new PersonaProvider();
+  String _fecha = '';
+
+  TextEditingController _inputfieldDateController = new TextEditingController();
 
   PersonaModel persona = new PersonaModel();
 
@@ -31,7 +36,7 @@ class _PersonaPageState extends State<PersonaPage> {
                 _crearApellido(),
                 _crearDireccion(),
                 _crearTelefono(),
-                _crearFechaNacimiento(),
+                _crearFechaNacimiento(context),
                 _crearBoton()
               ],
             ),
@@ -95,19 +100,40 @@ class _PersonaPageState extends State<PersonaPage> {
     );
   }
 
-  Widget _crearFechaNacimiento() {
+  Widget _crearFechaNacimiento(BuildContext context) {
     return TextFormField(
-      keyboardType: TextInputType.datetime,
+      enableInteractiveSelection: false,
+      controller: _inputfieldDateController,
       decoration: InputDecoration(labelText: 'Fecha Nacimiento'),
-      onSaved: (value) => persona.fechaNacimiento = DateTime.now(),
+      onTap: () {
+        FocusScope.of(context).requestFocus(new FocusNode());
+
+        _selectDate(context);
+      },
+      onSaved: (value) => persona.fechaNacimiento = value,
       validator: (value) {
         var result;
-        value.length != 0
-            ? result = null
-            : result = 'Ingrese una fecha de nacimiento';
+        value.length != 0 ? result = null : result = 'Ingrese una fecha de nacimiento';
         return result;
       },
     );
+  }
+
+  _selectDate(BuildContext context) async {
+    DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: new DateTime.now(),
+        firstDate: new DateTime(1900),
+        lastDate: new DateTime(2025));
+
+    if (picked != null) {
+      setState(() {
+        _fecha = picked.toString();
+
+        _inputfieldDateController.text =
+            DateFormat("yyyy-MM-dd").format(DateTime.parse(_fecha));
+      });
+    }
   }
 
   Widget _crearBoton() {
@@ -132,7 +158,9 @@ class _PersonaPageState extends State<PersonaPage> {
     print(persona.direccion);
     print(persona.telefono);
     print(persona.fechaNacimiento);
-
+    print(persona.estado);
+    print('>>>>>>>>>>');
+    print(new DateFormat("yyyy-MM-dd").format(DateTime.now()));
     personaProvider.crearPersona(persona);
   }
 }
