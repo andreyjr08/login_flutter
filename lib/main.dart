@@ -3,6 +3,7 @@ import 'package:form_validate/src/bloc/provider.dart';
 import 'package:form_validate/src/pages/home_page.dart';
 import 'package:form_validate/src/pages/login_page.dart';
 import 'package:form_validate/src/pages/persona_page.dart';
+import 'package:form_validate/src/pages/registro_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
           'login': (BuildContext context) => LoginPage(),
           'home': (BuildContext context) => HomePage(),
           'persona': (BuildContext context) => PersonaPage(),
+          'registro': (BuildContext context) => RegistroPage(),
         },
         theme: ThemeData(
           primaryColor: Colors.deepPurple

@@ -21,6 +21,7 @@ class PersonaProvider {
   }
 
   Future<List<PersonaModel>> listarPersonas() async {
+    
     final url = '$_url/obtenerPersonas';
     final resp = await http.get(url);
 
@@ -32,8 +33,10 @@ class PersonaProvider {
     List<dynamic> entitlements = decodeData["payload"];
 
     entitlements.forEach((valor) {
-      final persTemp = PersonaModel.fromJson(valor);
-      personas.add(persTemp);
+      if (valor['estado'] == 'A') {
+        final persTemp = PersonaModel.fromJson(valor);
+        personas.add(persTemp);
+      }
     });
 
     return personas;
@@ -41,18 +44,31 @@ class PersonaProvider {
 
   Future<int> inactivarPersona(int id) async {
     final url = '$_url/actualizarEstadoPersona';
-    print(id);
 
-    final body = jsonEncode({'id' : id});
+    final body = jsonEncode({'id': id});
 
     final resp = await http.post(url,
         headers: {HttpHeaders.contentTypeHeader: 'application/json'},
         body: body);
 
-        print(resp);
+    print(resp);
 
     print(json.decode(resp.body));
 
     return 1;
+  }
+
+    Future<bool> actualizarPersona(PersonaModel persona) async {
+    final url = "$_url/actualizarPersona";
+
+    final resp = await http.post(url,
+        headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+        body: personaModelToJson(persona));
+
+    final decodeData = json.decode(resp.body);
+
+    print(decodeData);
+
+    return true;
   }
 }

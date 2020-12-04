@@ -46,7 +46,8 @@ class HomePage extends StatelessWidget {
       child: ListTile(
         title: Text('${persona.nombre} ${persona.apellido}'),
         subtitle: Text(persona.estado),
-        onTap: () => Navigator.pushNamed(context, 'persona'),
+        onTap: () =>
+            Navigator.pushNamed(context, 'persona', arguments: persona),
       ),
     );
   }

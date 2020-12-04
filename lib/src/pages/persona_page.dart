@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_validate/src/bloc/provider.dart';
 import 'package:form_validate/src/models/PersonaModel.dart';
 import 'package:form_validate/src/providers/persona_provider.dart';
 import 'package:form_validate/src/utils/utils.dart' as utils;
@@ -11,17 +12,32 @@ class PersonaPage extends StatefulWidget {
 }
 
 class _PersonaPageState extends State<PersonaPage> {
+
   final formKey = GlobalKey<FormState>();
+  final scaffoldKey = GlobalKey<ScaffoldState>();
   final personaProvider = new PersonaProvider();
   String _fecha = '';
 
   TextEditingController _inputfieldDateController = new TextEditingController();
 
+
   PersonaModel persona = new PersonaModel();
+  bool _guardando = false;
 
   @override
   Widget build(BuildContext context) {
+
+
+    final PersonaModel prodData = ModalRoute.of(context).settings.arguments;
+
+    if (prodData != null) {
+      persona = prodData;
+    }
+
+    _inputfieldDateController.text = persona.fechaNacimiento;
+
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
         title: Text('Persona'),
       ),
@@ -48,6 +64,7 @@ class _PersonaPageState extends State<PersonaPage> {
 
   Widget _crearNombre() {
     return TextFormField(
+      initialValue: persona.nombre,
       textCapitalization: TextCapitalization.sentences,
       decoration: InputDecoration(labelText: 'Nombre'),
       onSaved: (value) => persona.nombre = value,
@@ -61,6 +78,7 @@ class _PersonaPageState extends State<PersonaPage> {
 
   Widget _crearApellido() {
     return TextFormField(
+      initialValue: persona.apellido,
       textCapitalization: TextCapitalization.sentences,
       decoration: InputDecoration(labelText: 'Apellido'),
       onSaved: (value) => persona.apellido = value,
@@ -74,6 +92,7 @@ class _PersonaPageState extends State<PersonaPage> {
 
   Widget _crearDireccion() {
     return TextFormField(
+      initialValue: persona.direccion,
       textCapitalization: TextCapitalization.sentences,
       decoration: InputDecoration(labelText: 'Direccion'),
       onSaved: (value) => persona.direccion = value,
@@ -87,6 +106,7 @@ class _PersonaPageState extends State<PersonaPage> {
 
   Widget _crearTelefono() {
     return TextFormField(
+      initialValue: persona.telefono,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(labelText: 'Telefono'),
       onSaved: (value) => persona.telefono = value,
@@ -113,7 +133,9 @@ class _PersonaPageState extends State<PersonaPage> {
       onSaved: (value) => persona.fechaNacimiento = value,
       validator: (value) {
         var result;
-        value.length != 0 ? result = null : result = 'Ingrese una fecha de nacimiento';
+        value.length != 0
+            ? result = null
+            : result = 'Ingrese una fecha de nacimiento';
         return result;
       },
     );
@@ -143,7 +165,7 @@ class _PersonaPageState extends State<PersonaPage> {
       textColor: Colors.white,
       label: Text('Guardar'),
       icon: Icon(Icons.save),
-      onPressed: _submit,
+      onPressed: (_guardando) ? null : _submit,
     );
   }
 
@@ -152,15 +174,31 @@ class _PersonaPageState extends State<PersonaPage> {
 
     formKey.currentState.save();
 
-    print('>>>>>>>>>>');
-    print(persona.nombre);
-    print(persona.apellido);
-    print(persona.direccion);
-    print(persona.telefono);
-    print(persona.fechaNacimiento);
-    print(persona.estado);
-    print('>>>>>>>>>>');
-    print(new DateFormat("yyyy-MM-dd").format(DateTime.now()));
-    personaProvider.crearPersona(persona);
+    setState(() {
+      _guardando = true;
+    });
+
+    if (persona.id == null) {
+      personaProvider.crearPersona(persona);
+    } else {
+      personaProvider.actualizarPersona(persona);
+    }
+
+    setState(() {
+      _guardando = false;
+    });
+
+    alertaSnackbar("El registro se guardo correctamente");
+
+    Navigator.pop(context);
+  }
+
+  void alertaSnackbar(String mensaje) {
+    final snackbar = SnackBar(
+      content: Text(mensaje),
+      duration: Duration(milliseconds: 1500),
+    );
+
+    scaffoldKey.currentState.showSnackBar(snackbar);
   }
 }

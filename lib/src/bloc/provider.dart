@@ -10,7 +10,7 @@ class Provider extends InheritedWidget {
     if (_instancia == null) {
       _instancia = new Provider._internal(key: key, child: child);
     }
-    
+
     return _instancia;
   }
 
